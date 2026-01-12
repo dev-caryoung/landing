@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
-const marqueeText = "에이전트 관리  •  계약 관리  •  자동 정산  •  데이터 분석  •  갱신 관리  •  실시간 대시보드  •  ";
+const marqueeText = "에이전트 관리  •  계약 등록  •  자동 정산  •  실적 대시보드  •  갱신 알림  •  수수료 조회  •  GA 리포트  •  ";
 
 export function Marquee() {
   const marqueeRef = useRef<HTMLDivElement>(null);

@@ -9,14 +9,14 @@ gsap.registerPlugin(ScrollTrigger);
 
 const columns = [
   {
-    title: "에이전트 중심 설계",
+    title: "현장 영업을 위한 설계",
     description:
-      "3,000명 이상의 에이전트를 효율적으로 관리하고, 각 에이전트의 실적과 정산을 실시간으로 추적합니다.",
+      "에이전트가 현장에서 바로 계약을 등록하고, 실적을 확인할 수 있도록 모바일 최적화된 인터페이스를 제공합니다.",
   },
   {
-    title: "데이터 기반 의사결정",
+    title: "GA와 에이전트 모두를 위한",
     description:
-      "축적된 데이터를 기반으로 인사이트를 제공하여 더 나은 영업 전략을 수립할 수 있도록 지원합니다.",
+      "GA는 소속 에이전트의 전체 실적을 한눈에, 에이전트는 본인의 계약과 수수료를 실시간으로 확인합니다.",
   },
 ];
 
@@ -87,9 +87,9 @@ export function MediaSection() {
 
           {/* Content */}
           <div ref={contentRef}>
-            <p className="reveal-item text-small text-muted-foreground mb-6">Our approach</p>
+            <p className="reveal-item text-small text-muted-foreground mb-6">Our Platform</p>
             <h2 className="reveal-item text-3xl md:text-4xl font-medium text-foreground mb-8">
-              보험 영업의 복잡성을 단순하게
+              다이렉트 자동차보험 영업의 새로운 기준
             </h2>
             <div className="space-y-8">
               {columns.map((column, index) => (
