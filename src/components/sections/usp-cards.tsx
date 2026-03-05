@@ -72,7 +72,7 @@ export function UspCards() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 bg-background border-t border-border">
+    <section id="platform" ref={sectionRef} className="py-20 bg-background border-t border-border">
       <div className="container-main">
         <div ref={cardsRef} className="grid md:grid-cols-3 gap-8 lg:gap-12">
           {cards.map((card, index) => (

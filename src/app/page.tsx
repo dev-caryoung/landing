@@ -9,6 +9,7 @@ import {
   SplitCTA,
   MediaSection,
   NewsGrid,
+  ContactSection,
   Footer,
 } from "@/components/sections";
 
@@ -23,6 +24,7 @@ export default function Home() {
       <SplitCTA />
       <MediaSection />
       <NewsGrid />
+      <ContactSection />
       <Footer />
     </main>
   );

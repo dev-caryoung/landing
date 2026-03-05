@@ -11,23 +11,23 @@ gsap.registerPlugin(ScrollTrigger);
 const posts = [
   {
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop",
-    category: "뉴스",
-    title: "카영, 누적 에이전트 3,000명 돌파",
-    date: "2024.12.15",
+    category: "제품",
+    title: "에이전트 계약 관리 및 수익 조회 기능 출시",
+    date: "2026.03.01",
     href: "/news/1",
   },
   {
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop",
     category: "제품",
-    title: "실시간 정산 조회 기능 출시",
-    date: "2024.11.20",
+    title: "GA 정산 관리 및 에이전트 플랜 시스템 오픈",
+    date: "2026.02.15",
     href: "/news/2",
   },
   {
     image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&auto=format&fit=crop",
-    category: "파트너십",
-    title: "주요 GA 10곳과 파트너십 체결",
-    date: "2024.10.08",
+    category: "제품",
+    title: "추천 프로그램 및 파트너십 관리 기능 런칭",
+    date: "2026.01.20",
     href: "/news/3",
   },
 ];
