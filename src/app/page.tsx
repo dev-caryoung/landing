@@ -8,6 +8,7 @@ import {
   Marquee,
   SplitCTA,
   MediaSection,
+  DealerAppShowcase,
   NewsGrid,
   ContactSection,
   Footer,
@@ -23,6 +24,7 @@ export default function Home() {
       <Marquee />
       <SplitCTA />
       <MediaSection />
+      <DealerAppShowcase />
       <NewsGrid />
       <ContactSection />
       <Footer />

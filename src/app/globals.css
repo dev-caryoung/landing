@@ -48,38 +48,38 @@
 
 :root {
   --radius: 0.625rem;
-  /* Cream/Beige premium theme like Integrated Biosciences */
-  --background: #f5f3ef;
-  --foreground: #222f30;
+  /* Caryoung Dealer 테마 — light + indigo blue primary (#2563eb) */
+  --background: #fafbfc;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #222f30;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #222f30;
-  --primary: #222f30;
-  --primary-foreground: #f5f3ef;
-  --secondary: #e8e5df;
-  --secondary-foreground: #222f30;
-  --muted: #e8e5df;
-  --muted-foreground: #6b7280;
-  --accent: #445e5f;
-  --accent-foreground: #f5f3ef;
+  --popover-foreground: #0f172a;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #eff6ff;
+  --accent-foreground: #2563eb;
   --destructive: #ef4444;
-  --border: #d4d0c8;
-  --input: #d4d0c8;
-  --ring: #222f30;
-  --chart-1: #445e5f;
-  --chart-2: #6b8e8f;
-  --chart-3: #8fb3b4;
-  --chart-4: #b3d4d5;
-  --chart-5: #d7f0f1;
-  --sidebar: #f5f3ef;
-  --sidebar-foreground: #222f30;
-  --sidebar-primary: #222f30;
-  --sidebar-primary-foreground: #f5f3ef;
-  --sidebar-accent: #e8e5df;
-  --sidebar-accent-foreground: #222f30;
-  --sidebar-border: #d4d0c8;
-  --sidebar-ring: #222f30;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
+  --chart-1: #2563eb;
+  --chart-2: #3b82f6;
+  --chart-3: #60a5fa;
+  --chart-4: #93c5fd;
+  --chart-5: #bfdbfe;
+  --sidebar: #fafbfc;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eff6ff;
+  --sidebar-accent-foreground: #2563eb;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #2563eb;
 }
 
 .dark {
