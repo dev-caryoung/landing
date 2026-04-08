@@ -1,202 +1,123 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import {
+  CompanyCard,
+  CompanyGroup,
+  PartnershipData,
+  groupByCompany,
+} from "@/components/partnership-card";
 
-gsap.registerPlugin(ScrollTrigger);
+const CARD_WIDTH = 340;
+const CARD_GAP = 12;
 
-const columns = [
-  {
-    title: "현장 영업을 위한 설계",
-    description:
-      "에이전트가 현장에서 바로 계약을 등록하고, 실적을 확인할 수 있도록 모바일 최적화된 인터페이스를 제공합니다.",
-  },
-  {
-    title: "GA와 에이전트 모두를 위한",
-    description:
-      "GA는 소속 에이전트의 전체 실적을 한눈에, 에이전트는 본인의 계약과 수수료를 실시간으로 확인합니다.",
-  },
-];
-
-interface Partner {
-  name: string;
-  shortName: string;
-  products: string[];
-}
-
-// API 실패 시 폴백 데이터
-const fallbackPartners: Partner[] = [
-  { name: "현대해상", shortName: "현대해상", products: ["자동차"] },
-  { name: "한화손해보험", shortName: "한화손해보험", products: ["자동차"] },
-  { name: "하나손해보험", shortName: "하나손해보험", products: ["자동차"] },
-  { name: "삼성화재", shortName: "삼성화재", products: ["자동차"] },
-  { name: "DB손해보험", shortName: "DB손해보험", products: ["자동차"] },
-  { name: "KB손해보험", shortName: "KB손해보험", products: ["자동차"] },
-  { name: "흥국화재", shortName: "흥국화재", products: ["자동차"] },
-  { name: "AXA손해보험", shortName: "AXA손해보험", products: ["자동차"] },
-  { name: "메리츠화재", shortName: "메리츠화재", products: ["자동차"] },
-];
-
+/**
+ * Our Platform — 제휴사 카드 sticky 가로 스크롤
+ * 페이지 스크롤하는 동안 카드 row가 가로로 이동, 첫 카드부터 마지막 카드까지 보여진 후 다음 섹션으로
+ */
 export function MediaSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const pinRef = useRef<HTMLDivElement>(null);
-  const [partners, setPartners] = useState<Partner[]>(fallbackPartners);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [companies, setCompanies] = useState<CompanyGroup[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // 관리자 API에서 보험사 목록 조회
   useEffect(() => {
-    fetch("/api/partners")
+    fetch("/api/partnerships")
       .then((res) => res.json())
       .then((json) => {
-        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-          setPartners(json.data);
+        if (json.success) {
+          setCompanies(groupByCompany(json.data as PartnershipData));
         }
       })
-      .catch(() => {
-        // 폴백 데이터 유지
-      });
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  // 섹션 pin + 스크롤 기반 카드 전환
-  useEffect(() => {
-    if (!pinRef.current || partners.length === 0) return;
+  // sticky 영역 안에서 0 → 1 으로 진행하는 가로 스크롤
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
 
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: pinRef.current,
-        start: "top top",
-        end: `+=${partners.length * 150}%`,
-        pin: true,
-        pinSpacing: true,
-        onUpdate: (self) => {
-          const progress = self.progress;
-          setScrollProgress(progress);
-          const newIndex = Math.min(
-            Math.floor(progress * partners.length),
-            partners.length - 1
-          );
-          setActiveIndex(newIndex);
-        },
-      });
-    }, sectionRef);
+  // 카드 전체 너비 - 화면 너비 만큼 좌측으로 이동
+  // 화면 너비 가정: 1280px (max-w container), 좌우 32px padding
+  const totalCardsWidth = companies.length * (CARD_WIDTH + CARD_GAP);
+  const x = useTransform(
+    scrollYProgress,
+    [0.05, 0.95],
+    [0, -(totalCardsWidth - 1100)]
+  );
 
-    return () => ctx.revert();
-  }, [partners]);
+  // sticky 영역 높이: 카드 수에 비례 (카드 1개당 ~80vh 이동)
+  const sectionHeight = `${Math.max(150, companies.length * 70)}vh`;
 
   return (
-    <section ref={sectionRef}>
-      <div ref={pinRef} className="min-h-screen flex items-center bg-secondary/30">
-        <div className="container-main w-full">
-          {/* Label */}
-          <div className="mb-12">
-            <span className="text-small text-muted-foreground">Our Platform</span>
-          </div>
+    <section
+      ref={sectionRef}
+      className="relative bg-gradient-to-b from-white via-[#FAFBFC] to-white"
+      style={{ height: sectionHeight }}
+    >
+      <div className="sticky top-0 h-screen flex flex-col justify-center gap-16 overflow-hidden">
+        {/* Header */}
+        <div className="container-main">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-3xl"
+          >
+            <p className="text-[11px] uppercase tracking-[0.22em] text-[#2563eb] font-bold">
+              Our Platform
+            </p>
+            <h2 className="text-[28px] lg:text-[44px] font-bold tracking-tight leading-[1.05] mt-3 text-foreground">
+              다이렉트 자동차보험 <span className="text-[#2563eb]">9개 보험사</span>와 함께합니다
+            </h2>
+            <p className="text-sm lg:text-base text-muted-foreground mt-3 leading-relaxed max-w-2xl">
+              현장에서 바로 사용 가능한 TM 콜백, CM 다이렉트 가입까지. 카영 딜러는 9개 주요 보험사와 직접 연결되어 있습니다.
+            </p>
+          </motion.div>
+        </div>
 
-          <div className="flex gap-8 md:gap-16">
-            {/* Progress indicator */}
-            <aside className="hidden md:flex flex-col items-center gap-3 pt-2">
-              <span className="text-sm font-medium tabular-nums text-foreground">
-                {String(activeIndex + 1).padStart(2, "0")}
-              </span>
-              <div className="relative w-px h-32 bg-border overflow-hidden">
-                <div
-                  className="absolute top-0 left-0 w-full bg-foreground origin-top"
-                  style={{
-                    height: "100%",
-                    transform: `scaleY(${scrollProgress})`,
-                    transition: "transform 0.1s",
-                  }}
-                />
-              </div>
-              <span className="text-sm text-muted-foreground tabular-nums">
-                {String(partners.length).padStart(2, "0")}
-              </span>
-            </aside>
-
-            {/* Content area */}
-            <div className="flex-1">
-              <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-                {/* Partner card */}
-                <div className="relative h-[240px] md:h-[280px]">
-                  {partners.map((partner, i) => (
-                    <div
-                      key={partner.name}
-                      className="absolute inset-0 rounded-2xl border border-border/60 bg-card p-8 flex flex-col justify-between shadow-[0_4px_40px_-12px_rgba(0,0,0,0.1)]"
-                      style={{
-                        opacity: i === activeIndex ? 1 : 0,
-                        transform: `translateY(${i === activeIndex ? 0 : i > activeIndex ? 20 : -20}px)`,
-                        transition: "opacity 0.4s ease, transform 0.4s ease",
-                        pointerEvents: i === activeIndex ? "auto" : "none",
-                      }}
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-6">
-                          <span className="text-[11px] text-muted-foreground bg-secondary/80 px-2.5 py-1 rounded-full">
-                            {String(i + 1).padStart(2, "0")} / {String(partners.length).padStart(2, "0")}
-                          </span>
-                          <div className="flex items-center gap-1.5">
-                            <span className="inline-block text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">
-                              다이렉트
-                            </span>
-                            <span className="inline-block text-[10px] font-medium text-accent/60 bg-accent/5 px-2 py-0.5 rounded-full">
-                              자동차보험
-                            </span>
-                          </div>
-                        </div>
-                        <h3 className="text-2xl md:text-3xl font-medium text-foreground">
-                          {partner.name}
-                        </h3>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">제휴 파트너</span>
-                        <div className="flex gap-1">
-                          {partners.map((_, dotIdx) => (
-                            <div
-                              key={dotIdx}
-                              className="w-1.5 h-1.5 rounded-full"
-                              style={{
-                                backgroundColor: dotIdx === i ? "var(--accent)" : "var(--border)",
-                                transition: "background-color 0.3s",
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Text content */}
-                <div>
-                  <h2 className="text-3xl md:text-4xl font-medium text-foreground mb-8">
-                    다이렉트 자동차보험 영업의 새로운 기준
-                  </h2>
-                  <div className="space-y-8">
-                    {columns.map((column, index) => (
-                      <div key={index}>
-                        <h3 className="text-lg font-medium text-foreground mb-2">{column.title}</h3>
-                        <p className="text-muted-foreground leading-relaxed">{column.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+        {/* Horizontal scrolling cards */}
+        <div className="relative">
+          {loading ? (
+            <div className="container-main flex gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-[220px] w-[340px] shrink-0 rounded-2xl bg-gray-100 animate-pulse" />
+              ))}
             </div>
-          </div>
+          ) : companies.length > 0 ? (
+            <motion.div
+              style={{ x }}
+              className="flex gap-3 items-stretch pl-[max(2rem,calc((100vw-1400px)/2+2rem))] pr-8"
+            >
+              {companies.map((company, i) => (
+                <Link
+                  key={company.name}
+                  href="/partnerships"
+                  className="block w-[340px] shrink-0"
+                >
+                  <CompanyCard company={company} index={i} animate={false} className="cursor-pointer" />
+                </Link>
+              ))}
+            </motion.div>
+          ) : null}
+        </div>
 
-          {/* Mobile progress */}
-          <div className="md:hidden mt-10 flex items-center gap-2">
-            {partners.map((_, index) => (
-              <div
-                key={index}
-                className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                  index <= activeIndex ? "bg-foreground" : "bg-border"
-                }`}
-              />
-            ))}
-          </div>
+        {/* CTA */}
+        <div className="container-main flex justify-center">
+          <Link
+            href="/partnerships"
+            className="group inline-flex items-center gap-3 px-7 py-3.5 rounded-full bg-foreground text-background text-sm font-semibold hover:scale-[1.02] transition-transform"
+          >
+            제휴 보험사 전체보기
+            <span className="flex items-center justify-center w-7 h-7 bg-background/15 rounded-full group-hover:translate-x-0.5 transition-transform">
+              <ArrowRight className="h-4 w-4" />
+            </span>
+          </Link>
         </div>
       </div>
     </section>

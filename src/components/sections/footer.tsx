@@ -50,7 +50,7 @@ export function Footer() {
   }, []);
 
   return (
-    <footer ref={footerRef} className="py-16 lg:py-20 bg-primary text-primary-foreground">
+    <footer ref={footerRef} className="py-16 lg:py-20 bg-zinc-950 text-zinc-100">
       <div className="container-main">
         {/* Top */}
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-12 mb-16">

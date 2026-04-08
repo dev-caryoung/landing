@@ -6,6 +6,7 @@ export { Marquee } from "./marquee";
 export { SplitCTA } from "./split-cta";
 export { MediaSection } from "./media-section";
 export { DealerAppShowcase } from "./dealer-app-showcase";
+export { AdminConsoleShowcase } from "./admin-console-showcase";
 export { NewsGrid } from "./news-grid";
 export { ContactSection } from "./contact-section";
 export { Footer } from "./footer";

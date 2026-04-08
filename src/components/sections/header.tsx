@@ -11,9 +11,9 @@ export function Header() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
-    { label: "플랫폼", href: "#platform" },
-    { label: "회사", href: "/company" },
-    { label: "뉴스룸", href: "/news" },
+    { label: "Dealer", href: "/#dealer" },
+    { label: "Admin", href: "/#admin" },
+    { label: "Partners", href: "/partnerships" },
   ];
 
   // Initial header animation
@@ -76,24 +76,9 @@ export function Header() {
         >
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="relative z-50 flex items-center gap-2">
-              {/* Logo Icon */}
-              <svg
-                className="w-6 h-6 md:w-7 md:h-7 text-foreground"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                <path
-                  d="M8 12C8 12 10 9 12 9C14 9 16 12 16 12C16 12 14 15 12 15C10 15 8 12 8 12Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-                <circle cx="12" cy="12" r="2" fill="currentColor" />
-              </svg>
-              <span className="text-lg md:text-xl font-medium tracking-tight text-foreground">
-                카영
+            <Link href="/" className="relative z-50 flex items-center">
+              <span className="text-sm md:text-base font-bold uppercase tracking-[0.22em] text-[#2563eb]">
+                Caryoung
               </span>
             </Link>
 
@@ -117,7 +102,7 @@ export function Header() {
                 href="#contact"
                 className="flex items-center gap-2 px-5 py-3 bg-primary text-primary-foreground rounded-full text-xs font-medium uppercase tracking-wider hover:bg-primary/90 transition-colors"
               >
-                <span>문의하기</span>
+                <span>Contact</span>
                 <svg
                   className="w-4 h-4"
                   fill="none"

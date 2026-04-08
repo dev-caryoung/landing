@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { useRef, useState } from "react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform, MotionValue } from "framer-motion";
 import { ArrowUpRight, ChevronRight, Copy, FileText, Share2, Sparkles, TrendingUp, Users, CalendarClock, Check, Circle } from "lucide-react";
 
 /**
@@ -45,12 +45,16 @@ export function DealerAppShowcase() {
   // 0 ~ SCENE_COUNT-1 사이로 매핑
   const sceneProgress = useTransform(scrollYProgress, [0, 1], [0, SCENE_COUNT - 0.001]);
 
-  // 폰 안 컨텐츠를 스크롤 (위로 올라감)
-  // 컨텐츠 전체 높이는 ~1900px, 폰 화면은 ~620px → 약 1300px 정도 위로 올림
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, -1280]);
+  // 현재 씬 인덱스 (페이지 전환용)
+  const [currentScene, setCurrentScene] = useState(0);
+  useMotionValueEvent(sceneProgress, "change", (v) => {
+    const next = Math.min(SCENE_COUNT - 1, Math.max(0, Math.floor(v + 0.5)));
+    setCurrentScene((prev) => (prev === next ? prev : next));
+  });
 
   return (
     <section
+      id="dealer"
       ref={ref}
       className="relative bg-white"
       style={{ height: `${SCENE_COUNT * 100}vh` }}
@@ -86,12 +90,22 @@ export function DealerAppShowcase() {
                   <Indicator key={i} index={i} sceneProgress={sceneProgress} />
                 ))}
               </div>
+
+              <a
+                href="https://client-roan-six.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-foreground text-background text-sm font-semibold hover:scale-[1.02] transition-transform"
+              >
+                딜러앱 체험하기
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
             </div>
           </div>
 
           {/* 우측 — 폰 프레임 */}
           <div className="hidden lg:flex items-center justify-center">
-            <PhoneFrame contentY={contentY} />
+            <PhoneFrame currentScene={currentScene} />
           </div>
         </div>
       </div>
@@ -115,7 +129,7 @@ function SceneText({
 
   return (
     <motion.div className="absolute inset-0" style={{ opacity, y }}>
-      <p className="text-[11px] uppercase tracking-[0.18em] text-[#2563eb] font-bold">
+      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-900 font-bold">
         {scene.eyebrow}
       </p>
       <h3 className="text-[44px] lg:text-[52px] font-bold tracking-tight leading-[1.05] mt-4 text-slate-900 whitespace-pre-line">
@@ -136,19 +150,45 @@ function Indicator({ index, sceneProgress }: { index: number; sceneProgress: Mot
 
 /* ────────────── Phone Frame ────────────── */
 
-function PhoneFrame({ contentY }: { contentY: MotionValue<number> }) {
+function PhoneFrame({ currentScene }: { currentScene: number }) {
   return (
     <div className="relative w-[340px] h-[680px] rounded-[44px] bg-slate-900 p-3 shadow-2xl shadow-[#2563eb]/20">
       {/* 노치 */}
       <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-5 bg-slate-900 rounded-b-2xl z-20" />
       {/* 화면 */}
       <div className="relative w-full h-full rounded-[34px] bg-background overflow-hidden">
-        <motion.div style={{ y: contentY }}>
-          <DealerHomeMockup />
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentScene}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0 overflow-hidden"
+          >
+            <DealerScreen index={currentScene} />
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
+}
+
+/* ────────────── Dealer Screens (per scene) ────────────── */
+
+function DealerScreen({ index }: { index: number }) {
+  switch (index) {
+    case 0:
+      return <DashboardScreen />;
+    case 1:
+      return <AffiliateScreen />;
+    case 2:
+      return <ReferralsScreen />;
+    case 3:
+      return <ContractsScreen />;
+    default:
+      return <DashboardScreen />;
+  }
 }
 
 /* ────────────── Mock 데이터 ────────────── */
@@ -190,39 +230,31 @@ const MOCK = {
 
 const fmt = (n: number) => new Intl.NumberFormat("ko-KR").format(n);
 
-/* ────────────── Dealer Home Mockup (1:1 replica of client/src/app/page.tsx) ────────────── */
+/* ────────────── Shared Header ────────────── */
 
-function DealerHomeMockup() {
-  const cumulative = MOCK.referralAffiliate.cumulativeCommission;
-  const yesterday = MOCK.referralAffiliate.yesterdayCommission;
-  const thisMonthEst = MOCK.referralStats.estimatedCommission;
-  const funnel = MOCK.referralAffiliate.funnel;
-  const list = MOCK.referralList;
-
+function ScreenHeader({ title }: { title: string }) {
   return (
-    <div className="flex flex-col bg-background text-foreground">
-      {/* Header */}
-      <div className="px-5 pt-8 pb-5 border-b border-border/60">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-[11px] uppercase tracking-widest text-muted-foreground/70 font-medium">Dealer</p>
-            <h1 className="text-[22px] font-bold mt-1 tracking-tight">{MOCK.profile.name}</h1>
-            <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-muted-foreground">
-              <span className="tabular-nums">{MOCK.profile.phone}</span>
-              <span className="text-border">·</span>
-              <span>등록자 {MOCK.profile.referrer.name}</span>
-            </div>
-          </div>
-          <div className="shrink-0 text-right">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70">함께한 일수</p>
-            <p className="text-2xl font-bold leading-none mt-1 tabular-nums">{MOCK.profile.daysWithCaryoung}</p>
-            <p className="text-[10px] text-muted-foreground mt-1 tabular-nums">{MOCK.profile.joinedAt}</p>
-          </div>
-        </div>
-      </div>
+    <div className="px-5 pt-8 pb-4 border-b border-border/60 shrink-0">
+      <p className="text-[10px] uppercase tracking-widest text-muted-foreground/70 font-medium">Dealer</p>
+      <h1 className="text-[20px] font-bold mt-1 tracking-tight">{title}</h1>
+    </div>
+  );
+}
 
-      {/* Main */}
+/* ────────────── Screen 0: DASHBOARD ────────────── */
+
+function DashboardScreen() {
+  return (
+    <div className="flex flex-col h-full bg-background text-foreground overflow-y-auto">
+      <ScreenHeader title={MOCK.profile.name} />
       <div className="px-5 space-y-4 pt-5 pb-10">
+        {/* Profile meta */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span className="tabular-nums">{MOCK.profile.phone}</span>
+          <span>등록자 {MOCK.profile.referrer.name}</span>
+          <span className="tabular-nums">{MOCK.profile.daysWithCaryoung}일째</span>
+        </div>
+
         {/* Earnings */}
         <div className="relative px-5 py-6 rounded-2xl border bg-gradient-to-br from-primary/5 via-card to-card overflow-hidden">
           <div className="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-primary/10 blur-2xl" />
@@ -247,6 +279,54 @@ function DealerHomeMockup() {
           </div>
         </div>
 
+        {/* Quick Stats */}
+        <div className="px-5 py-4 rounded-2xl border bg-card">
+          <div className="grid grid-cols-3 divide-x divide-border">
+            <div className="px-2">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">이번달</p>
+              <p className="text-2xl font-bold mt-0.5 tabular-nums leading-none">{MOCK.stats.thisMonthContracts}</p>
+            </div>
+            <div className="px-3">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">유효</p>
+              <p className="text-2xl font-bold mt-0.5 tabular-nums leading-none">{MOCK.stats.activeContracts}</p>
+            </div>
+            <div className="px-3">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">전체</p>
+              <p className="text-2xl font-bold mt-0.5 tabular-nums leading-none">{MOCK.stats.totalContracts}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { icon: FileText, label: "계약" },
+            { icon: TrendingUp, label: "수익" },
+            { icon: Users, label: "추천" },
+          ].map((a) => (
+            <div key={a.label} className="flex flex-col items-center gap-2 rounded-xl border border-border py-4">
+              <a.icon className="h-5 w-5 text-muted-foreground" strokeWidth={1.8} />
+              <span className="text-[11px] font-medium">{a.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ────────────── Screen 1: AFFILIATE ────────────── */
+
+function AffiliateScreen() {
+  const cumulative = MOCK.referralAffiliate.cumulativeCommission;
+  const yesterday = MOCK.referralAffiliate.yesterdayCommission;
+  const thisMonthEst = MOCK.referralStats.estimatedCommission;
+  const funnel = MOCK.referralAffiliate.funnel;
+
+  return (
+    <div className="flex flex-col h-full bg-background text-foreground overflow-y-auto">
+      <ScreenHeader title="제휴 / Affiliate" />
+      <div className="px-5 space-y-4 pt-5 pb-10">
         {/* Affiliate Hero */}
         <div className="relative px-5 py-6 rounded-2xl border overflow-hidden bg-gradient-to-br from-primary/5 via-card to-card">
           <div className="absolute -top-20 -right-10 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
@@ -320,8 +400,19 @@ function DealerHomeMockup() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* Referral list */}
+/* ────────────── Screen 2: REFERRALS ────────────── */
+
+function ReferralsScreen() {
+  const list = MOCK.referralList;
+  return (
+    <div className="flex flex-col h-full bg-background text-foreground overflow-y-auto">
+      <ScreenHeader title="내 사람들" />
+      <div className="px-5 space-y-4 pt-5 pb-10">
         <div className="rounded-2xl border bg-card overflow-hidden">
           <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b">
             <div>
@@ -367,26 +458,18 @@ function DealerHomeMockup() {
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* Quick Stats */}
-        <div className="px-5 py-4 rounded-2xl border bg-card">
-          <div className="grid grid-cols-3 divide-x divide-border">
-            <div className="px-2">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">이번달</p>
-              <p className="text-2xl font-bold mt-0.5 tabular-nums leading-none">{MOCK.stats.thisMonthContracts}</p>
-            </div>
-            <div className="px-3">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">유효</p>
-              <p className="text-2xl font-bold mt-0.5 tabular-nums leading-none">{MOCK.stats.activeContracts}</p>
-            </div>
-            <div className="px-3">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">전체</p>
-              <p className="text-2xl font-bold mt-0.5 tabular-nums leading-none">{MOCK.stats.totalContracts}</p>
-            </div>
-          </div>
-        </div>
+/* ────────────── Screen 3: CONTRACTS ────────────── */
 
-        {/* Recent Contracts */}
+function ContractsScreen() {
+  return (
+    <div className="flex flex-col h-full bg-background text-foreground overflow-y-auto">
+      <ScreenHeader title="내 계약" />
+      <div className="px-5 space-y-4 pt-5 pb-10">
         <div className="rounded-2xl border bg-card overflow-hidden">
           <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b">
             <div>
@@ -419,20 +502,6 @@ function DealerHomeMockup() {
                   <p className="text-[10px] text-muted-foreground mt-0.5 tabular-nums">{c.contract_date}</p>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { icon: FileText, label: "계약" },
-            { icon: TrendingUp, label: "수익" },
-            { icon: Users, label: "추천" },
-          ].map((a) => (
-            <div key={a.label} className="flex flex-col items-center gap-2 rounded-xl border border-border py-4">
-              <a.icon className="h-5 w-5 text-muted-foreground" strokeWidth={1.8} />
-              <span className="text-[11px] font-medium">{a.label}</span>
             </div>
           ))}
         </div>

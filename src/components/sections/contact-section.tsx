@@ -9,6 +9,8 @@ gsap.registerPlugin(ScrollTrigger);
 export function ContactSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -38,9 +40,48 @@ export function ContactSection() {
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    if (isSubmitting) return;
+
+    const formEl = e.currentTarget;
+    const formData = new FormData(formEl);
+    const payload = {
+      name: String(formData.get("name") || "").trim(),
+      email: String(formData.get("email") || "").trim(),
+      phone: String(formData.get("phone") || "").trim(),
+      message: String(formData.get("message") || "").trim(),
+    };
+
+    if (!payload.name || !payload.email || !payload.message) {
+      setErrorMessage("이름, 이메일, 문의 내용은 필수입니다.");
+      return;
+    }
+
+    setErrorMessage(null);
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch("/api/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json().catch(() => null);
+
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error || "문의 접수에 실패했습니다.");
+      }
+
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error("Contact submit error:", err);
+      setErrorMessage(
+        err instanceof Error ? err.message : "문의 접수에 실패했습니다."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -134,11 +175,17 @@ export function ContactSection() {
                     placeholder="문의 내용을 입력해 주세요"
                   />
                 </div>
+                {errorMessage && (
+                  <p className="text-sm text-red-500" role="alert">
+                    {errorMessage}
+                  </p>
+                )}
                 <button
                   type="submit"
-                  className="w-full py-4 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:scale-[1.02] transition-transform"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:scale-[1.02] transition-transform disabled:opacity-60 disabled:hover:scale-100"
                 >
-                  문의 보내기
+                  {isSubmitting ? "전송 중..." : "문의 보내기"}
                 </button>
               </form>
             )}

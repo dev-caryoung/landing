@@ -9,7 +9,7 @@ import {
   SplitCTA,
   MediaSection,
   DealerAppShowcase,
-  NewsGrid,
+  AdminConsoleShowcase,
   ContactSection,
   Footer,
 } from "@/components/sections";
@@ -25,7 +25,7 @@ export default function Home() {
       <SplitCTA />
       <MediaSection />
       <DealerAppShowcase />
-      <NewsGrid />
+      <AdminConsoleShowcase />
       <ContactSection />
       <Footer />
     </main>

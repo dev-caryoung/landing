@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { HeroBackground } from "./hero-background";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -24,7 +25,6 @@ const scrollItems = [
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -120,21 +120,8 @@ export function Hero() {
     <section ref={sectionRef} className="relative">
       {/* Hero Main */}
       <div ref={mainRef} className="relative min-h-screen flex items-center">
-        {/* Video Background */}
-        <div className="absolute inset-0 overflow-hidden">
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover"
-            poster="/video-poster.jpg"
-          >
-            <source src="https://integratedbiosciences.com/wp-content/uploads/2025/10/integrated-loop-optimized.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-background/60" />
-        </div>
+        {/* Background — gradient + blobs + canvas particles */}
+        <HeroBackground />
 
         {/* Content */}
         <div className="relative container-main py-32 lg:py-40">
