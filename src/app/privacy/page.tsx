@@ -76,7 +76,7 @@ export default function PrivacyPage() {
               <h2 className="text-xl font-medium text-foreground mb-4">7. 개인정보 보호책임자</h2>
               <ul className="list-none space-y-2">
                 <li>회사명: 카영</li>
-                <li>이메일: contact@caryoung.kr</li>
+                <li>이메일: info@caryoung.co.kr</li>
               </ul>
             </div>
 

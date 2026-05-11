@@ -55,17 +55,41 @@ export function Footer() {
         {/* Top */}
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-12 mb-16">
           {/* Logo & Contact */}
-          <div className="footer-item">
+          <div className="footer-item max-w-md">
             <Link href="/" className="inline-block mb-6">
               <span className="text-3xl font-semibold tracking-tight">카영</span>
             </Link>
-            <div className="space-y-2">
-              <a
-                href="mailto:contact@caryoung.kr"
-                className="block text-primary-foreground/70 hover:text-primary-foreground transition-colors"
-              >
-                contact@caryoung.kr
-              </a>
+            <div className="text-sm leading-relaxed">
+              <div className="space-y-1.5 text-primary-foreground/55">
+                <p>
+                  <span className="text-primary-foreground/80">주식회사 카영</span>
+                  <span className="mx-2 text-primary-foreground/25">|</span>
+                  대표&nbsp;송용혁
+                </p>
+                <p>
+                  사업자등록번호&nbsp;
+                  <span className="text-primary-foreground/70">569-81-03602</span>
+                </p>
+                <p>서울특별시 강남구 삼성로 417, 상가동 204-11호</p>
+                <p>
+                  대표번호&nbsp;
+                  <a
+                    href="tel:010-2131-6204"
+                    className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                  >
+                    010-2131-6204
+                  </a>
+                </p>
+                <p>
+                  문의:&nbsp;
+                  <a
+                    href="mailto:info@caryoung.co.kr"
+                    className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                  >
+                    info@caryoung.co.kr
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
 

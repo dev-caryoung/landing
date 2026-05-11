@@ -193,10 +193,10 @@ export function Header() {
 
           <div className="menu-item mt-16 pt-8 border-t border-border">
             <a
-              href="mailto:contact@caryoung.kr"
+              href="mailto:info@caryoung.co.kr"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              contact@caryoung.kr
+              info@caryoung.co.kr
             </a>
           </div>
         </div>

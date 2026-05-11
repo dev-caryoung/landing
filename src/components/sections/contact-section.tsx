@@ -100,10 +100,10 @@ export function ContactSection() {
             </p>
             <div className="reveal-item">
               <a
-                href="mailto:contact@caryoung.kr"
+                href="mailto:info@caryoung.co.kr"
                 className="text-foreground font-medium hover:text-accent transition-colors"
               >
-                contact@caryoung.kr
+                info@caryoung.co.kr
               </a>
             </div>
           </div>
